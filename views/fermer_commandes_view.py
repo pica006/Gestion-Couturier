@@ -190,7 +190,7 @@ def afficher_page_fermer_commandes():
                                 pourcentage_paye = ((nouvelle_avance_ajoutee / reste_a_verser) * 100) if reste_a_verser > 0 else 0
                                 st.caption(f"💳 {pourcentage_paye:.0f}% du reste sera payé")
                         
-                        submit = st.form_submit_button("💾 Enregistrer les modifications", type="primary", width='stretch')
+                        submit = st.form_submit_button("💾 Enregistrer les modifications", type="primary")
                         
                         if submit:
                             # Validation

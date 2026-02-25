@@ -252,7 +252,6 @@ def afficher_page_commande():
         st.markdown("<br>", unsafe_allow_html=True)
         submit = st.form_submit_button(
             "✅ Enregistrer la commande",
-            width='stretch',
             type="primary"
         )
         

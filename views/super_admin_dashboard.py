@@ -585,7 +585,7 @@ def afficher_gestion_salons(salon_model):
                 nom_admin = st.text_input("Nom de l'admin *", placeholder="Ex: DIOP")
                 prenom_admin = st.text_input("Prénom de l'admin *", placeholder="Ex: Moustapha")
             
-            submitted = st.form_submit_button("💾 Créer le salon", width='stretch')
+            submitted = st.form_submit_button("💾 Créer le salon")
             
             if submitted:
                 # Validation
@@ -707,10 +707,10 @@ def afficher_gestion_salons(salon_model):
                     col_submit1, col_submit2 = st.columns(2)
                     
                     with col_submit1:
-                        submitted = st.form_submit_button("💾 Enregistrer les modifications", width='stretch')
+                        submitted = st.form_submit_button("💾 Enregistrer les modifications")
                     
                     with col_submit2:
-                        if st.form_submit_button("❌ Annuler", width='stretch'):
+                        if st.form_submit_button("❌ Annuler"):
                             st.rerun()
                     
                     if submitted:
@@ -889,7 +889,7 @@ def afficher_gestion_utilisateurs(super_admin_ctrl, salon_model, couturier_model
                 with col4:
                     telephone = st.text_input("Téléphone")
                 
-                submitted = st.form_submit_button("💾 Créer l'admin", width='stretch')
+                submitted = st.form_submit_button("💾 Créer l'admin")
                 
                 if submitted:
                     if not all([selected_salon, code_couturier, password, nom, prenom]):
@@ -966,7 +966,7 @@ def afficher_gestion_utilisateurs(super_admin_ctrl, salon_model, couturier_model
                 with col4:
                     telephone = st.text_input("Téléphone")
                 
-                submitted = st.form_submit_button("💾 Créer l'employé", width='stretch')
+                submitted = st.form_submit_button("💾 Créer l'employé")
                 
                 if submitted:
                     if not all([selected_salon, code_couturier, password, nom, prenom]):
@@ -1342,7 +1342,7 @@ def afficher_demandes_globales_super_admin(commande_model, salon_model):
                         key=f"comment_val_super_{demande['id']}",
                         height=80
                     )
-                    if st.form_submit_button("✅ Valider", type="primary", width='stretch'):
+                    if st.form_submit_button("✅ Valider", type="primary"):
                         try:
                             if commande_model.valider_fermeture(
                                 demande['id'],
@@ -1366,7 +1366,7 @@ def afficher_demandes_globales_super_admin(commande_model, salon_model):
                         key=f"comment_rej_super_{demande['id']}",
                         height=80
                     )
-                    if st.form_submit_button("❌ Rejeter", width='stretch'):
+                    if st.form_submit_button("❌ Rejeter"):
                         try:
                             if commande_model.valider_fermeture(
                                 demande['id'],

@@ -156,41 +156,39 @@ def main() -> None:
     if not st.session_state.get("authentifie", False):
         db_ready, db_message = ensure_database_connection(st.session_state)
         st.session_state.db_available = bool(db_ready)
-        if not db_ready and db_message:
-            st.warning(f"⚠️ Connexion base non disponible : {db_message}")
         st.markdown(get_sidebar_styles_css(sidebar_bg), unsafe_allow_html=True)
-    else:
-        db_ready, db_message = ensure_db_or_fail_gracefully(st.session_state, max_retries=2)
-        if not db_ready:
-            logger.error("DB indisponible en session authentifiée: %s", db_message)
-            _invalidate_user_and_redirect_to_login(
-                "Connexion base perdue. Merci de vous reconnecter dans quelques secondes."
-            )
-            return
-        st.markdown(get_sidebar_styles_css(SIDEBAR_BG_PLAIN), unsafe_allow_html=True)
+        _render_sidebar()
+        afficher_page_connexion()
+        return
 
+    db_ready, db_message = ensure_db_or_fail_gracefully(st.session_state, max_retries=2)
+    if not db_ready:
+        logger.error("DB indisponible en session authentifiée: %s", db_message)
+        _invalidate_user_and_redirect_to_login(
+            "Connexion base perdue. Merci de vous reconnecter dans quelques secondes."
+        )
+        return
+
+    st.markdown(get_sidebar_styles_css(SIDEBAR_BG_PLAIN), unsafe_allow_html=True)
     _render_sidebar()
 
-    if not st.session_state.get("authentifie", False):
-        afficher_page_connexion()
-    else:
-        page_bg_html = get_page_background_html(
-            st.session_state.get("page", "dashboard"),
-            PAGE_BACKGROUND_IMAGES,
-        )
-        if page_bg_html:
-            st.markdown(page_bg_html, unsafe_allow_html=True)
-        try:
-            _route_authenticated_page()
-        except Exception:
-            logger.exception("Erreur non capturée pendant le routing/authenticated view")
-            db_ready, db_message = ensure_db_or_fail_gracefully(st.session_state, max_retries=1)
-            if not db_ready:
-                _invalidate_user_and_redirect_to_login(
-                    "La base est indisponible. Session réinitialisée pour éviter un écran bloqué."
-                )
-                return
-            st.error("❌ Une erreur temporaire est survenue. Réessayez.")
+    page_bg_html = get_page_background_html(
+        st.session_state.get("page", "dashboard"),
+        PAGE_BACKGROUND_IMAGES,
+    )
+    if page_bg_html:
+        st.markdown(page_bg_html, unsafe_allow_html=True)
+    try:
+        _route_authenticated_page()
+    except Exception:
+        logger.exception("Erreur non capturée pendant le routing/authenticated view")
+        db_ready, db_message = ensure_db_or_fail_gracefully(st.session_state, max_retries=1)
+        if not db_ready:
+            _invalidate_user_and_redirect_to_login(
+                "La base est indisponible. Session réinitialisée pour éviter un écran bloqué."
+            )
+            return
+        st.error("❌ Une erreur temporaire est survenue. Réessayez.")
 
     render_bottom_nav(
         {

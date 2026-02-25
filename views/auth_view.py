@@ -450,7 +450,6 @@ def afficher_page_connexion():
             # Bouton de soumission
             submit_auth = st.form_submit_button(
                 "🔓 Se connecter",
-                width='stretch',
                 type="primary"
             )
             

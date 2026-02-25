@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 import streamlit as st
 
 from services.session_state_service import initialize_session_state, clear_user_session
-from services.database_service import ensure_database_connection, ensure_db_or_fail_gracefully
+from services.database_service import ensure_db_or_fail_gracefully
 from utils.permissions import est_super_admin
 from utils.role_utils import est_admin
 from utils.bottom_nav import render_bottom_nav
@@ -154,8 +154,6 @@ def main() -> None:
     sidebar_bg = _load_sidebar_bg_image()
 
     if not st.session_state.get("authentifie", False):
-        db_ready, db_message = ensure_database_connection(st.session_state)
-        st.session_state.db_available = bool(db_ready)
         st.markdown(get_sidebar_styles_css(sidebar_bg), unsafe_allow_html=True)
         _render_sidebar()
         afficher_page_connexion()

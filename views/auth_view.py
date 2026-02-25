@@ -399,7 +399,7 @@ def afficher_page_connexion():
     if not db_ready:
         st.error("❌ Connexion à la base indisponible.")
         st.info("💡 Vérifiez la configuration puis cliquez sur Réessayer.")
-        if st.button("🔄 Réessayer la connexion", width="stretch", key="retry_db_connection"):
+        if st.button("🔄 Réessayer la connexion", use_container_width=True, key="retry_db_connection"):
             st.rerun()
     
     # ========================================================================

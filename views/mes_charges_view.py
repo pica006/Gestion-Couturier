@@ -2789,7 +2789,7 @@ def _liste_charges(charges_model, couturier_id, is_admin=False, salon_id_user: O
         st.write("")  # Espacement vertical
         btn_actualiser = st.button("🔄 Actualiser", 
                                    type="primary", 
-                                   width='stretch',
+                                   use_container_width=True,
                                    key="btn_actualiser_analyse",
                                    help="Recalculer les totaux et statistiques avec les filtres sélectionnés")
     

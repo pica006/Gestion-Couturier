@@ -442,7 +442,7 @@ def afficher_page_comptabilite():
                     if st.button(
                         "📧 Envoyer un rappel par email",
                         key=f"relance_email_{cmd['id']}",
-                        width='stretch'
+                        use_container_width=True
                     ):
                         client_email = cmd.get('client_email')
                         if not client_email:

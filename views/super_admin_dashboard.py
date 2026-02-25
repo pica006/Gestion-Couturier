@@ -1816,7 +1816,7 @@ def afficher_rapports(super_admin_ctrl, salon_model):
         - Archivage structuré
         """)
         
-        if st.button("📥 Générer rapport JSON", width='stretch'):
+        if st.button("📥 Générer rapport JSON", use_container_width=True):
             with st.spinner("Génération du rapport..."):
                 rapport = super_admin_ctrl.generer_rapport_complet(salon_id_rapport)
                 
@@ -1853,7 +1853,7 @@ def afficher_rapports(super_admin_ctrl, salon_model):
         - Import dans des bases de données
         """)
         
-        if st.button("📥 Générer rapport CSV", width='stretch'):
+        if st.button("📥 Générer rapport CSV", use_container_width=True):
             with st.spinner("Génération du rapport..."):
                 rapport = super_admin_ctrl.generer_rapport_complet(salon_id_rapport)
                 

@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 import streamlit as st
 
 from services.session_state_service import initialize_session_state, clear_user_session
-from services.database_service import ensure_database_connection, ensure_db_or_fail_gracefully
+from services.database_service import ensure_db_or_fail_gracefully
 from utils.permissions import est_super_admin
 from utils.role_utils import est_admin
 from utils.bottom_nav import render_bottom_nav
@@ -65,7 +65,7 @@ def _render_sidebar() -> None:
 
         if est_super_admin():
             st.markdown("### 🔧 SUPER ADMINISTRATION")
-            if st.button("📊 Dashboard Super Admin", width="stretch"):
+            if st.button("📊 Dashboard Super Admin", use_container_width=True):
                 st.session_state.page = "super_admin_dashboard"
                 st.rerun()
             st.markdown("---")
@@ -81,18 +81,18 @@ def _render_sidebar() -> None:
             ("📋 Modèles & Calendrier", "calendrier"),
         ]
         for label, page_id in routes:
-            if st.button(label, width="stretch"):
+            if st.button(label, use_container_width=True):
                 st.session_state.page = page_id
                 st.rerun()
 
         if est_admin(st.session_state.get("couturier_data")) and not est_super_admin():
             st.markdown("---")
-            if st.button("👑 Administration", width="stretch"):
+            if st.button("👑 Administration", use_container_width=True):
                 st.session_state.page = "administration"
                 st.rerun()
 
         st.markdown("---")
-        if st.button("🚪 Deconnexion", width="stretch"):
+        if st.button("🚪 Deconnexion", use_container_width=True):
             clear_user_session(st.session_state)
             st.session_state.authentifie = False
             st.session_state.couturier_data = None
@@ -154,8 +154,6 @@ def main() -> None:
     sidebar_bg = _load_sidebar_bg_image()
 
     if not st.session_state.get("authentifie", False):
-        db_ready, db_message = ensure_database_connection(st.session_state)
-        st.session_state.db_available = bool(db_ready)
         st.markdown(get_sidebar_styles_css(sidebar_bg), unsafe_allow_html=True)
         _render_sidebar()
         afficher_page_connexion()

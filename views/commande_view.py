@@ -719,7 +719,7 @@ def afficher_page_commande():
         
         with col_upload2:
             st.markdown("<br>", unsafe_allow_html=True)
-            if st.button("📤 Copier le PDF", width='stretch', key="btn_upload_pdf_outside"):
+            if st.button("📤 Copier le PDF", use_container_width=True, key="btn_upload_pdf_outside"):
                 try:
                     if dossier_upload and os.path.exists(dossier_upload):
                         with st.spinner("📤 Copie du PDF..."):

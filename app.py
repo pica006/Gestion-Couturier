@@ -14,6 +14,10 @@ def init_session():
         "user": None,
         "page": "login",
         "db": None,
+        "db_connection": None,
+        "db_initialized": False,
+        "db_last_error": None,
+        "db_available": False,
         "db_ready": False,
     }
     for k, v in defaults.items():
@@ -77,12 +81,13 @@ def main():
 
     # ---------- DB (UNE SEULE FOIS) ----------
     if not st.session_state.db_ready:
-        ok, db = ensure_db_or_fail_gracefully(st.session_state)
+        ok, db_error = ensure_db_or_fail_gracefully(st.session_state)
         st.session_state.db_ready = ok
-        st.session_state.db = db
+        st.session_state.db = st.session_state.get("db_connection")
+        st.session_state.db_last_error = db_error
 
     if not st.session_state.db_ready:
-        st.error("Base de données indisponible.")
+        st.error(st.session_state.get("db_last_error") or "Base de données indisponible.")
         return
 
     # ---------- APP ----------

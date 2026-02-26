@@ -96,7 +96,13 @@ class AuthController:
             return False, None, "Le mot de passe ne peut pas être vide"
         
         # Vérifier que la connexion à la base de données est active
-        if not self.db_connection.is_connected():
+        if self.db_connection is None:
+            return False, None, "Pas de connexion à la base de données"
+        try:
+            is_connected = self.db_connection.is_connected()
+        except Exception:
+            return False, None, "Pas de connexion à la base de données"
+        if not is_connected:
             return False, None, "Pas de connexion à la base de données"
         
         # ====================================================================

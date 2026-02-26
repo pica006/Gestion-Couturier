@@ -1,5 +1,6 @@
 import streamlit as st
 from controllers.auth_controller import AuthController
+from services.database_service import ensure_db_or_fail_gracefully
 
 def afficher_page_connexion():
     st.title("Connexion")
@@ -12,7 +13,16 @@ def afficher_page_connexion():
     if not submit:
         return
 
-    auth = AuthController(st.session_state.db)
+    db_ok, db_error = ensure_db_or_fail_gracefully(st.session_state, max_retries=1)
+    db_connection = st.session_state.get("db_connection")
+    if not db_ok or db_connection is None:
+        st.error(db_error or "Base de données indisponible.")
+        return
+
+    st.session_state.db_ready = True
+    st.session_state.db = db_connection
+
+    auth = AuthController(db_connection)
     ok, data, msg = auth.authentifier(code, password)
 
     if not ok:

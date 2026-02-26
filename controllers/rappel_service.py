@@ -3,6 +3,7 @@ Service de rappels automatiques (J-2 avant livraison).
 Envoie email + SMS sans intervention manuelle.
 """
 import os
+import tempfile
 from datetime import datetime, timedelta
 from collections import defaultdict
 
@@ -10,9 +11,11 @@ from models.database import CommandeModel
 from models.salon_model import SalonModel
 from controllers.email_controller import EmailController
 
-# Fichier pour éviter d'envoyer 2 fois le même jour
+# Fichier pour éviter d'envoyer 2 fois le même jour.
+# Important: on l'écrit hors du dossier du projet pour éviter
+# les redémarrages Streamlit déclenchés par le file watcher.
 RAPPELS_LAST_RUN_FILE = os.path.join(
-    os.path.dirname(os.path.dirname(__file__)), "data", "rappels_last_run.txt"
+    tempfile.gettempdir(), "gestion_couturier", "rappels_last_run.txt"
 )
 
 

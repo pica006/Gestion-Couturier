@@ -55,6 +55,15 @@ class DatabaseConnection:
             True si succès, False sinon
         """
         try:
+            # Evite les blocages "connexion infinie" si la DB est indisponible.
+            timeout_value = self.config.get('connect_timeout', self.config.get('timeout', 8))
+            try:
+                connect_timeout = int(timeout_value)
+            except (TypeError, ValueError):
+                connect_timeout = 8
+            if connect_timeout <= 0:
+                connect_timeout = 8
+
             if self.db_type == 'postgresql':
                 if psycopg2 is None:
                     print("psycopg2 non installé")
@@ -64,7 +73,8 @@ class DatabaseConnection:
                     'port': int(self.config.get('port', 5432)),
                     'database': self.config['database'],
                     'user': self.config['user'],
-                    'password': self.config['password']
+                    'password': self.config['password'],
+                    'connect_timeout': connect_timeout,
                 }
                 # SSL requis pour Render PostgreSQL
                 if self.config.get('sslmode'):
@@ -80,7 +90,8 @@ class DatabaseConnection:
                     port=int(self.config['port']),
                     database=self.config['database'],
                     user=self.config['user'],
-                    password=self.config['password']
+                    password=self.config['password'],
+                    connection_timeout=connect_timeout,
                 )
                 return True
             else:

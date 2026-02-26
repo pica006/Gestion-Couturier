@@ -125,13 +125,15 @@ def _parse_database_url(database_url: str) -> dict:
     parsed = urlparse(database_url)
     query_params = parse_qs(parsed.query)
     sslmode = query_params.get('sslmode', ['require'])[0]
+    connect_timeout = query_params.get('connect_timeout', [os.getenv('DB_CONNECT_TIMEOUT', '8')])[0]
     return {
         'host': parsed.hostname or '',
         'port': str(parsed.port or 5432),
         'database': (parsed.path or '').lstrip('/'),
         'user': parsed.username or '',
         'password': parsed.password or '',
-        'sslmode': sslmode
+        'sslmode': sslmode,
+        'connect_timeout': connect_timeout,
     }
 
 
@@ -150,7 +152,8 @@ def _resolve_cloud_database_config() -> dict:
             'database': os.getenv('DATABASE_NAME', ''),
             'user': os.getenv('DATABASE_USER', ''),
             'password': os.getenv('DATABASE_PASSWORD', ''),
-            'sslmode': os.getenv('DATABASE_SSLMODE', 'require')
+            'sslmode': os.getenv('DATABASE_SSLMODE', 'require'),
+            'connect_timeout': os.getenv('DB_CONNECT_TIMEOUT', '8'),
         }
 
     # Priorité 3: variables PostgreSQL standards
@@ -160,7 +163,8 @@ def _resolve_cloud_database_config() -> dict:
         'database': os.getenv('PGDATABASE', ''),
         'user': os.getenv('PGUSER', ''),
         'password': os.getenv('PGPASSWORD', ''),
-        'sslmode': os.getenv('PGSSLMODE', 'require')
+        'sslmode': os.getenv('PGSSLMODE', 'require'),
+        'connect_timeout': os.getenv('DB_CONNECT_TIMEOUT', '8'),
     }
 
 if IS_RENDER:
@@ -186,7 +190,8 @@ else:
             'port': _port,
             'database': os.getenv('DB_NAME', 'db_couturier'),
             'user': os.getenv('DB_USER', 'postgres'),
-            'password': os.getenv('DB_PASSWORD', '')  # À mettre dans .env uniquement
+            'password': os.getenv('DB_PASSWORD', ''),  # À mettre dans .env uniquement
+            'connect_timeout': os.getenv('DB_CONNECT_TIMEOUT', '8'),
         }
     }
 

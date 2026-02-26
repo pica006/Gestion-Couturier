@@ -12,8 +12,4 @@ python-dotenv==1.0.0
 psycopg2-binary==2.9.9
 mysql-connector-python==8.3.0
 openpyxl==3.1.2
-
-
-=======
-matplotlib==3.8.4
->>>>>>> 8f1b086edfc039f04e20cf4cf7c65a246d45af47
+matplotlib==3.8.

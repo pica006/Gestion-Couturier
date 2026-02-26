@@ -30,6 +30,7 @@ OÙ IL EST UTILISÉ ?
 # os : Module Python pour interagir avec le système d'exploitation
 # Utilisé ici pour créer des chemins de fichiers et des dossiers
 import os
+from urllib.parse import urlparse, parse_qs
 
 # Charger .env dès l'import de config (pour DB_PASSWORD, etc.)
 try:
@@ -108,22 +109,66 @@ COMPANY_INFO = {
 # COMMENT ? Détection automatique : Render (variables d'environnement) ou Local (PostgreSQL)
 # UTILISÉ OÙ ? Dans app.py et views/auth_view.py lors de la connexion
 
-# Détecter si on est sur Render (production)
-IS_RENDER = os.getenv('RENDER') is not None or os.getenv('DATABASE_HOST') is not None
+# FIX: prend en charge Render/Railway/Azure + DATABASE_URL standard.
+IS_RENDER = any([
+    os.getenv('RENDER') is not None,
+    os.getenv('RAILWAY_ENVIRONMENT') is not None,
+    os.getenv('WEBSITE_SITE_NAME') is not None,  # Azure App Service
+    os.getenv('DATABASE_URL') is not None,
+    os.getenv('DATABASE_HOST') is not None,
+    os.getenv('PGHOST') is not None,
+])
 
-if IS_RENDER:
-    # ========== CONFIGURATION RENDER (PRODUCTION) ==========
-    # Les variables d'environnement sont automatiquement configurées par Render
-    # sslmode=require : requis pour PostgreSQL sur Render
-    DATABASE_CONFIG = {
-        'render_production': {
-            'host': os.getenv('DATABASE_HOST', ''),
+
+def _parse_database_url(database_url: str) -> dict:
+    # FIX: normalise DATABASE_URL pour éviter les crashs cloud.
+    parsed = urlparse(database_url)
+    query_params = parse_qs(parsed.query)
+    sslmode = query_params.get('sslmode', ['require'])[0]
+    return {
+        'host': parsed.hostname or '',
+        'port': str(parsed.port or 5432),
+        'database': (parsed.path or '').lstrip('/'),
+        'user': parsed.username or '',
+        'password': parsed.password or '',
+        'sslmode': sslmode
+    }
+
+
+def _resolve_cloud_database_config() -> dict:
+    # Priorité 1: URL complète (Railway/Render/Azure fréquent)
+    database_url = os.getenv('DATABASE_URL')
+    if database_url:
+        return _parse_database_url(database_url)
+
+    # Priorité 2: variables Render explicites
+    host = os.getenv('DATABASE_HOST', '')
+    if host:
+        return {
+            'host': host,
             'port': os.getenv('DATABASE_PORT', '5432'),
             'database': os.getenv('DATABASE_NAME', ''),
             'user': os.getenv('DATABASE_USER', ''),
             'password': os.getenv('DATABASE_PASSWORD', ''),
             'sslmode': os.getenv('DATABASE_SSLMODE', 'require')
         }
+
+    # Priorité 3: variables PostgreSQL standards
+    return {
+        'host': os.getenv('PGHOST', ''),
+        'port': os.getenv('PGPORT', '5432'),
+        'database': os.getenv('PGDATABASE', ''),
+        'user': os.getenv('PGUSER', ''),
+        'password': os.getenv('PGPASSWORD', ''),
+        'sslmode': os.getenv('PGSSLMODE', 'require')
+    }
+
+if IS_RENDER:
+    # ========== CONFIGURATION RENDER (PRODUCTION) ==========
+    # Les variables d'environnement sont automatiquement configurées par Render
+    # sslmode=require : requis pour PostgreSQL sur Render
+    DATABASE_CONFIG = {
+        'render_production': _resolve_cloud_database_config()
     }
 else:
     # ========== CONFIGURATION LOCAL (POSTGRESQL) ==========

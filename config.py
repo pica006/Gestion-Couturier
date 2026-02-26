@@ -139,32 +139,35 @@ def _parse_database_url(database_url: str) -> dict:
 
 def _resolve_cloud_database_config() -> dict:
     # Priorité 1: URL complète (Railway/Render/Azure fréquent)
-    database_url = os.getenv('DATABASE_URL')
+    database_url = os.getenv('DATABASE_URL', '').strip()
     if database_url:
-        return _parse_database_url(database_url)
+        parsed = _parse_database_url(database_url)
+        # Si l'URL est partielle/invalide, fallback propre sur DATABASE_*.
+        if parsed.get('host') and parsed.get('database') and parsed.get('user'):
+            return parsed
 
-    # Priorité 2: variables Render explicites
-    host = os.getenv('DATABASE_HOST', '')
+    # Priorité 2: variables Render explicites (noms exacts du dashboard Render)
+    host = os.getenv('DATABASE_HOST', '').strip()
     if host:
         return {
             'host': host,
-            'port': os.getenv('DATABASE_PORT', '5432'),
-            'database': os.getenv('DATABASE_NAME', ''),
-            'user': os.getenv('DATABASE_USER', ''),
+            'port': os.getenv('DATABASE_PORT', '5432').strip(),
+            'database': os.getenv('DATABASE_NAME', '').strip(),
+            'user': os.getenv('DATABASE_USER', '').strip(),
             'password': os.getenv('DATABASE_PASSWORD', ''),
-            'sslmode': os.getenv('DATABASE_SSLMODE', 'require'),
-            'connect_timeout': os.getenv('DB_CONNECT_TIMEOUT', '8'),
+            'sslmode': os.getenv('DATABASE_SSLMODE', 'require').strip(),
+            'connect_timeout': os.getenv('DB_CONNECT_TIMEOUT', '8').strip(),
         }
 
     # Priorité 3: variables PostgreSQL standards
     return {
-        'host': os.getenv('PGHOST', ''),
-        'port': os.getenv('PGPORT', '5432'),
-        'database': os.getenv('PGDATABASE', ''),
-        'user': os.getenv('PGUSER', ''),
+        'host': os.getenv('PGHOST', '').strip(),
+        'port': os.getenv('PGPORT', '5432').strip(),
+        'database': os.getenv('PGDATABASE', '').strip(),
+        'user': os.getenv('PGUSER', '').strip(),
         'password': os.getenv('PGPASSWORD', ''),
-        'sslmode': os.getenv('PGSSLMODE', 'require'),
-        'connect_timeout': os.getenv('DB_CONNECT_TIMEOUT', '8'),
+        'sslmode': os.getenv('PGSSLMODE', 'require').strip(),
+        'connect_timeout': os.getenv('DB_CONNECT_TIMEOUT', '8').strip(),
     }
 
 if IS_RENDER:

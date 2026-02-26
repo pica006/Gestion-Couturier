@@ -124,6 +124,7 @@ def afficher_page_connexion():
 
                         if success:
                             st.session_state.authentifie = True
+                            st.session_state.authenticated = True
                             st.session_state.couturier_data = data
 
                             role = str(data.get("role", "")).upper().strip()

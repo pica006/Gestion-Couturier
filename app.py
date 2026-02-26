@@ -7,6 +7,13 @@ Point d'entree Streamlit minimal.
 
 import streamlit as st
 
+st.set_page_config(
+    page_title="Gestion Couturier",
+    page_icon="👔",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
 from services.session_state_service import initialize_session_state, clear_user_session
 from services.database_service import ensure_db_or_fail_gracefully
 from utils.permissions import est_super_admin
@@ -43,13 +50,6 @@ try:
         load_dotenv()
 except Exception:
     pass
-
-st.set_page_config(
-    page_title="Gestion Couturier",
-    page_icon="👔",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
 
 st.markdown(get_main_css(), unsafe_allow_html=True)
 

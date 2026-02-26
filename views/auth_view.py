@@ -76,7 +76,6 @@ lux_vars_style = f"""
 }}
 </style>
 """
-st.markdown(lux_vars_style, unsafe_allow_html=True)
 
 # (CSS long inchangé – volontairement non modifié)
 # ⬇️ ⬇️ ⬇️
@@ -86,6 +85,8 @@ st.markdown(lux_vars_style, unsafe_allow_html=True)
 # PAGE DE CONNEXION
 # ==========================================================
 def afficher_page_connexion():
+    # FIX: évite tout appel Streamlit à l'import du module (compat set_page_config).
+    st.markdown(lux_vars_style, unsafe_allow_html=True)
     _ensure_auth_session_keys()
     content = load_site_content()
 
